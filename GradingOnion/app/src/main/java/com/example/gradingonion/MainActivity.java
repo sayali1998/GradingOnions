@@ -89,6 +89,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         BarChart barChart = (BarChart) findViewById(R.id.barchart);
+
+        barChart.setDrawBarShadow(false);
+        barChart.setDrawValueAboveBar(true);
+        barChart.setMaxVisibleValueCount(50);
+        barChart.setPinchZoom(true);
+        barChart.setDrawGridBackground(true);
+
+
         BarDataSet sunburnDataset=new BarDataSet(sunburn_list,"Sunburn Dataset");
         sunburnDataset.setColors(COLORFUL_COLORS);
         BarDataSet halfcutDataset=new BarDataSet(halfcut_list,"Halfcut Dataset");
@@ -99,9 +107,13 @@ public class MainActivity extends AppCompatActivity {
         dataSets.add(sunburnDataset);
         dataSets.add(halfcutDataset);
 
+        barChart.getDescription().setText("Defects Encountered  ");
+
         BarData data=new BarData(dataSets);
         barChart.setFitBars(true);
+        data.setBarWidth(0.9f);
         barChart.setData(data);
+
 
 
     }
