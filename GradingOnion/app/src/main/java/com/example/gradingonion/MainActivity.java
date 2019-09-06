@@ -27,6 +27,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.COLORFUL_COLORS;
+import static com.github.mikephil.charting.utils.ColorTemplate.COLOR_NONE;
+import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
 
     ArrayList trayLabels = new ArrayList();
-    ArrayList<BarEntry> sunburn_list = new ArrayList<>();
-    ArrayList<BarEntry> halfcut_list = new ArrayList<>();
+    final ArrayList<BarEntry> sunburn_list = new ArrayList<>();
+    final ArrayList<BarEntry> halfcut_list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
                 long number=dataSnapshot.getChildrenCount();
                 Log.d("Number of Trays",String.valueOf(number));
                 String tray="image";
-                for(int i =1; i<=number; i++)
+                for(int i =0; i<number; i++)
                 {
-                    String trayNumber=tray+String.valueOf(i);
+                    String trayNumber=tray+String.valueOf(i+1);
                     trayLabels.add(trayNumber);
                     String sunburn=dataSnapshot.child("/"+trayNumber+"/sunburn").getValue().toString();
                     String halfcut=dataSnapshot.child("/"+trayNumber+"/halfcut").getValue().toString();
@@ -75,12 +77,43 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("Sunburn",sunburn);
                     Log.d("Half Cut",halfcut);
 
-                    sunburn_list.add(new BarEntry(i,Float.parseFloat(sunburn)));
-                    halfcut_list.add(new BarEntry(i,Float.parseFloat(halfcut)));
+                    sunburn_list.add(new BarEntry(2*i+1,Float.parseFloat(sunburn)));
+                    Log.d("Sunburn List Add",sunburn_list.toString());
+                    halfcut_list.add(new BarEntry(2*i,Float.parseFloat(halfcut)));
 
                 }
+                BarChart barChart = (BarChart) findViewById(R.id.barchart);
+
+                float groupSpace = 0.06f;
+                float barSpace = 0.02f;
+                float barWidth = 0.45f;
+
+                barChart.setDrawBarShadow(false);
+                barChart.setDrawValueAboveBar(true);
+                barChart.setMaxVisibleValueCount(50);
+                barChart.setPinchZoom(true);
+                barChart.setDrawGridBackground(true);
+
+
+                BarDataSet sunburnDataset=new BarDataSet(sunburn_list,"Sunburn Dataset");
+                sunburnDataset.setColors(COLORFUL_COLORS);
+                BarDataSet halfcutDataset=new BarDataSet(halfcut_list,"Halfcut Dataset");
+                halfcutDataset.setColors(COLORFUL_COLORS);
+
+                Log.d("Sunburn ",sunburn_list.toString());
+
+                barChart.getDescription().setText("Defects Encountered  ");
+
+                BarData data=new BarData(sunburnDataset,halfcutDataset);
+                barChart.setFitBars(true);
+                data.setBarWidth(0.3f);
+                barChart.setData(data);
+                barChart.animateY(3000);
+
+
 
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -88,31 +121,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        BarChart barChart = (BarChart) findViewById(R.id.barchart);
-
-        barChart.setDrawBarShadow(false);
-        barChart.setDrawValueAboveBar(true);
-        barChart.setMaxVisibleValueCount(50);
-        barChart.setPinchZoom(true);
-        barChart.setDrawGridBackground(true);
-
-
-        BarDataSet sunburnDataset=new BarDataSet(sunburn_list,"Sunburn Dataset");
-        sunburnDataset.setColors(COLORFUL_COLORS);
-        BarDataSet halfcutDataset=new BarDataSet(halfcut_list,"Halfcut Dataset");
-        halfcutDataset.setColors(COLORFUL_COLORS);
-
-        //Combining Datasets
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-        dataSets.add(sunburnDataset);
-        dataSets.add(halfcutDataset);
-
-        barChart.getDescription().setText("Defects Encountered  ");
-
-        BarData data=new BarData(dataSets);
-        barChart.setFitBars(true);
-        data.setBarWidth(0.9f);
-        barChart.setData(data);
 
 
 
