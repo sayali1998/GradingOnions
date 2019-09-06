@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "36738754203",
+    "firebase_url": "https://grading-of-onions.firebaseio.com",
+    "project_id": "grading-of-onions",
+    "storage_bucket": "grading-of-onions.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:36738754203:android:1e13c8c139d86fab",
+        "android_client_info": {
+          "package_name": "com.example.gradingonion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "36738754203-27tsg0ec9eccarmqavu16akvjkihfik1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gradingonion",
+            "certificate_hash": "fdb07b5cedb3fb7b715e8614de5378d029fe8078"
+          }
+        },
+        {
+          "client_id": "36738754203-in4ladjp18qbiq89gme4fof1jul2js5s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYQjoLLRj4J6KnVCg24v5YUzwIRUQ-nrI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "36738754203-in4ladjp18qbiq89gme4fof1jul2js5s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
