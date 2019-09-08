@@ -3,18 +3,30 @@ package com.example.gradingonion;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,9 +48,13 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseDatabase firebaseDatabase;
 
-    ArrayList trayLabels = new ArrayList();
-    final ArrayList<BarEntry> sunburn_list = new ArrayList<>();
-    final ArrayList<BarEntry> halfcut_list = new ArrayList<>();
+    ArrayList<String> trayLabels = new ArrayList<>();
+    ArrayList<BarEntry> trayDefects = new ArrayList<>();
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +75,16 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference=firebaseDatabase.getReference("defects");
+        final BarChart barChart = (BarChart) findViewById(R.id.barchart);
+        Button capture=findViewById(R.id.capture);
+        capture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(MainActivity.this,CameraActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -67,26 +93,29 @@ public class MainActivity extends AppCompatActivity {
                 long number=dataSnapshot.getChildrenCount();
                 Log.d("Number of Trays",String.valueOf(number));
                 String tray="image";
-                for(int i =0; i<number; i++)
+                for(int i =0; i<number-1; i++)
                 {
+                    int total=0;
                     String trayNumber=tray+String.valueOf(i+1);
-                    trayLabels.add(trayNumber);
-                    String sunburn=dataSnapshot.child("/"+trayNumber+"/sunburn").getValue().toString();
-                    String halfcut=dataSnapshot.child("/"+trayNumber+"/halfcut").getValue().toString();
+                    trayLabels.add("Tray"+i+1);
+                    String sunburn=dataSnapshot.child("/"+trayNumber+"/sun burn").getValue().toString();
+                    String halfcut=dataSnapshot.child("/"+trayNumber+"/half cut").getValue().toString();
+                    String smutEffected=dataSnapshot.child("/"+trayNumber+"/smut effected").getValue().toString();
+                    String doubleOnion=dataSnapshot.child("/"+trayNumber+"/double onion").getValue().toString();
+                    String neck=dataSnapshot.child("/"+trayNumber+"/neck").getValue().toString();
+                    String rotten=dataSnapshot.child("/"+trayNumber+"/rotten").getValue().toString();
+                    String sprouting=dataSnapshot.child("/"+trayNumber+"/sprouting").getValue().toString();
+                    String tip=dataSnapshot.child("/"+trayNumber+"/tip").getValue().toString();
+                    String withoutSkin=dataSnapshot.child("/"+trayNumber+"/without skin").getValue().toString();
+                    total= Integer.parseInt(sunburn)+Integer.parseInt(halfcut)+Integer.parseInt(smutEffected)
+                            +Integer.parseInt(doubleOnion)+Integer.parseInt(neck)+Integer.parseInt(rotten)
+                            +Integer.parseInt(sprouting)+Integer.parseInt(tip)+Integer.parseInt(withoutSkin);
                     Log.d("Tray Number",trayNumber);
-                    Log.d("Sunburn",sunburn);
-                    Log.d("Half Cut",halfcut);
+                    Log.d("Total ",String.valueOf(total));
+                    trayDefects.add(new BarEntry(i+1,Float.parseFloat(String.valueOf(total))));
 
-                    sunburn_list.add(new BarEntry(2*i+1,Float.parseFloat(sunburn)));
-                    Log.d("Sunburn List Add",sunburn_list.toString());
-                    halfcut_list.add(new BarEntry(2*i,Float.parseFloat(halfcut)));
 
                 }
-                BarChart barChart = (BarChart) findViewById(R.id.barchart);
-
-                float groupSpace = 0.06f;
-                float barSpace = 0.02f;
-                float barWidth = 0.45f;
 
                 barChart.setDrawBarShadow(false);
                 barChart.setDrawValueAboveBar(true);
@@ -94,22 +123,36 @@ public class MainActivity extends AppCompatActivity {
                 barChart.setPinchZoom(true);
                 barChart.setDrawGridBackground(true);
 
-
-                BarDataSet sunburnDataset=new BarDataSet(sunburn_list,"Sunburn Dataset");
-                sunburnDataset.setColors(COLORFUL_COLORS);
-                BarDataSet halfcutDataset=new BarDataSet(halfcut_list,"Halfcut Dataset");
-                halfcutDataset.setColors(COLORFUL_COLORS);
-
-                Log.d("Sunburn ",sunburn_list.toString());
-
                 barChart.getDescription().setText("Defects Encountered  ");
 
-                BarData data=new BarData(sunburnDataset,halfcutDataset);
+                BarDataSet trayData=new BarDataSet(trayDefects,"Total Defects");
+
+                BarData data = new BarData(trayData);
+                barChart.setData(data);
+
+                XAxis xAxis = barChart.getXAxis();
+                xAxis.setValueFormatter(new IndexAxisValueFormatter(trayLabels));
+
                 barChart.setFitBars(true);
-                data.setBarWidth(0.3f);
+                data.setBarWidth(0.1f);
                 barChart.setData(data);
                 barChart.animateY(3000);
 
+                barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+                    @Override
+                    public void onValueSelected(Entry e, Highlight h) {
+                        String selectedTray=String.valueOf(e.getX());
+                        Log.d("Bar chart", selectedTray);
+                        Intent intent=new Intent(MainActivity.this, PieChart.class);
+                        intent.putExtra("Tray",selectedTray);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onNothingSelected() {
+
+                    }
+                });
 
 
             }
@@ -120,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
 
 
 

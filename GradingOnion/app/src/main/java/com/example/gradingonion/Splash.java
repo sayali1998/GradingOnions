@@ -30,7 +30,7 @@ public class Splash extends AppCompatActivity {
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-                Intent mainIntent = new Intent(Splash.this,CameraActivity.class);
+                Intent mainIntent = new Intent(Splash.this,MainActivity.class);
                 Splash.this.startActivity(mainIntent);
                 Splash.this.finish();
             }
