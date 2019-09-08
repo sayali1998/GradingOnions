@@ -31,26 +31,24 @@ void pickUp()
 {
   elbow.write(90);
   delay(2000);  
-  
   int i;
-  for(i=90;i>=0;i--)
+  for(i=90;i>=30;i--)
   {
     finger1.write(i);
     finger2.write(i);
     finger3.write(i);
+    delay(200);
     }
   delay(1000);
+  elbow.write(75);
+  delay(2000);
   
   }
 
 void drop()
 {
-  int i;
-  elbow.write(70);
-  delay(2000);
-  bottom.write(90);
-  delay(2000);  
-  for(i=0;i<=90;i++)
+  int i;  
+  for(i=30;i<=90;i++)
   {
     finger1.write(i);
     finger2.write(i);
@@ -69,13 +67,23 @@ void loop() {
   delay(2000);
   finger3.write(90);
   delay(2000);
-  shoulder.write(0);
+  shoulder.write(15);
   delay(2000);  
-  elbow.write(0);
+  elbow.write(45
+  
+  );
   delay(2000);
+  bottom.write(0);
+  delay(2000); 
   pickUp();
   delay(5000);
   //Turn to drop
+  int i;
+  for(i=0;i<=90;i++)
+  {
+    bottom.write(i);
+    delay(100); 
+    }
   drop();
   delay(2000);
   bottom.write(0);
