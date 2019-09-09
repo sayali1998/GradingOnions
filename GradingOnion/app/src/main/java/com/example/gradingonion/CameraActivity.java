@@ -23,6 +23,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -46,6 +50,10 @@ public class CameraActivity extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     Uri photoUri;
+
+    private FirebaseAuth mAuth;
+    private DatabaseReference databaseReference;
+    private FirebaseDatabase firebaseDatabase;
 
     @Override
     public void onBackPressed() {
@@ -71,6 +79,12 @@ public class CameraActivity extends AppCompatActivity {
         catch (NullPointerException e){}
 
         dispatchTakePictureIntent();
+
+        FirebaseApp.initializeApp(this);
+        mAuth = FirebaseAuth.getInstance();
+
+        firebaseDatabase=FirebaseDatabase.getInstance();
+        databaseReference=firebaseDatabase.getReference("defects");
 
         imageView=findViewById(R.id.imageView);
         uploadButton=findViewById(R.id.upload);
@@ -118,6 +132,7 @@ public class CameraActivity extends AppCompatActivity {
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    databaseReference.child("flag").setValue(1);
                     Toast.makeText(getApplicationContext(),"Image Successfully uploaded on Firebase",Toast.LENGTH_SHORT).show();
                 }
             });
