@@ -28,6 +28,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,7 +59,7 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
 
         storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReferenceFromUrl("gs://grading-of-onions.appspot.com/");
+        storageReference = storage.getReferenceFromUrl("gs://grading-of-onions.appspot.com/asd/filename.jpg");
 
 
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -94,12 +95,33 @@ public class CameraActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK ) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             imageView.setImageBitmap(imageBitmap);
+            Log.d("******************","");
             imagepath=saveToInternalStorage(imageBitmap);
-            photoUri= Uri.parse(imagepath);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data1 = baos.toByteArray();
+            Uri file = Uri.fromFile(new File(imagepath));
+            UploadTask uploadTask = storageReference.putBytes(data1);
+            StorageReference riversRef = storageReference.child("images/"+file.getLastPathSegment());
+            uploadTask = riversRef.putFile(file);
+
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(getApplicationContext(),"Image Successfully uploaded on Firebase",Toast.LENGTH_SHORT).show();
+                }
+            });
+
 
         }
     }
@@ -122,7 +144,7 @@ public class CameraActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        return directory.getAbsolutePath();
+        return mypath.getAbsolutePath();
     }
 
     private void uploadImage() {
