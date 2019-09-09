@@ -69,9 +69,7 @@ void loop() {
   delay(2000);
   shoulder.write(15);
   delay(2000);  
-  elbow.write(45
-  
-  );
+  elbow.write(45);
   delay(2000);
   bottom.write(0);
   delay(2000); 

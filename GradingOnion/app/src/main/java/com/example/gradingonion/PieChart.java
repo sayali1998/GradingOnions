@@ -74,31 +74,51 @@ public class PieChart extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 String sunburn=dataSnapshot.child("/sun burn").getValue().toString();
-                defectCount.add(new PieEntry(Float.parseFloat(sunburn),"Sunburn"));
+                if(Integer.parseInt(sunburn)!=0)
+                {
+                    defectCount.add(new PieEntry(Float.parseFloat(sunburn),"Sunburn"));
+                }
 
                 String halfcut=dataSnapshot.child("/half cut").getValue().toString();
-                defectCount.add(new PieEntry(Float.parseFloat(halfcut),"Half-Cut"));
+                if(Integer.parseInt(halfcut)!=0) {
+                    defectCount.add(new PieEntry(Float.parseFloat(halfcut), "Half-Cut"));
+                }
 
                 String smutEffected=dataSnapshot.child("/smut effected").getValue().toString();
-                defectCount.add(new PieEntry(Float.parseFloat(smutEffected),"Smut Effected"));
+                if(Integer.parseInt(smutEffected)!=0) {
+                    defectCount.add(new PieEntry(Float.parseFloat(smutEffected), "Smut Effected"));
+                }
 
                 String doubleOnion=dataSnapshot.child("/double onion").getValue().toString();
-                defectCount.add(new PieEntry(Float.parseFloat(doubleOnion),"Double Onion"));
+                if(Integer.parseInt(doubleOnion)!=0) {
+                    defectCount.add(new PieEntry(Float.parseFloat(doubleOnion), "Double Onion"));
+                }
 
                 String neck=dataSnapshot.child("/neck").getValue().toString();
-                defectCount.add(new PieEntry(Float.parseFloat(neck),"Neck"));
+                if(Integer.parseInt(neck)!=0) {
+                    defectCount.add(new PieEntry(Float.parseFloat(neck), "Neck"));
+                }
 
                 String rotten=dataSnapshot.child("/rotten").getValue().toString();
-                defectCount.add(new PieEntry(Float.parseFloat(rotten),"Rotten"));
+                if(Integer.parseInt(rotten)!=0) {
+                    defectCount.add(new PieEntry(Float.parseFloat(rotten), "Rotten"));
+                }
 
                 String sprouting=dataSnapshot.child("/sprouting").getValue().toString();
-                defectCount.add(new PieEntry(Float.parseFloat(sprouting),"Sprouting"));
+                if(Integer.parseInt(sprouting)!=0) {
+                    defectCount.add(new PieEntry(Float.parseFloat(sprouting), "Sprouting"));
+                }
 
                 String tip=dataSnapshot.child("/tip").getValue().toString();
-                defectCount.add(new PieEntry(Float.parseFloat(tip),"Tip"));
+                if(Integer.parseInt(tip)!=0) {
+                    defectCount.add(new PieEntry(Float.parseFloat(tip), "Tip"));
+                }
 
                 String withoutSkin=dataSnapshot.child("/without skin").getValue().toString();
-                defectCount.add(new PieEntry(Float.parseFloat(withoutSkin),"Without Skin"));
+                if(Integer.parseInt(withoutSkin)!=0) {
+                    defectCount.add(new PieEntry(Float.parseFloat(withoutSkin),"Without Skin"));
+                }
+
 
                 com.github.mikephil.charting.charts.PieChart pieChart=findViewById(R.id.piechart);
                 PieDataSet dataSet = new PieDataSet(defectCount, "Number Of Defects");
