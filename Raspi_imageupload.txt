@@ -1,0 +1,29 @@
+from picamera import PiCamera
+from time import sleep
+import sys
+import os
+import requests
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import storage
+camera = PiCamera()
+
+camera.start_preview()
+for i in range(1):
+    sleep(5)
+    camera.capture('/home/pi/Desktop/Datadir/images%s.jpg' % i)
+camera.stop_preview()
+
+image_url='/home/pi/Desktop/Datadir/images0.jpg'
+
+cred = credentials.Certificate('/home/pi/Downloads/google-services.json')
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'grading-of-onions.appspot.com'
+})
+
+bucket = storage.bucket()
+
+
+blob = bucket.blob('images0.jpg')
+imageBlob = bucket.blob(os.path.basename(image_url))
+imageBlob.upload_from_filename(image_url)

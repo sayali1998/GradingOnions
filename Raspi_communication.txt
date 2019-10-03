@@ -1,0 +1,41 @@
+from firebase import Firebase
+import RPi.GPIO as GPIO
+import serial
+
+SERIAL_PORT="/dev/ttyS0"
+
+config = {
+  "apiKey": "CHq7JOprIMkR4Ee3lQ3qCyj1GwVoBKxGCxQ5v48A",
+  "authDomain": "grading-of-onions.firebaseapp.com",
+  "databaseURL": "https://grading-of-onions.firebaseio.com/",
+  "storageBucket": "grading-of-onions.appspot.com"
+}
+
+firebase = Firebase(config)
+
+auth = firebase.auth()
+db = firebase.database()
+
+ser=serial.Serial(SERIAL_PORT,baudrate=9600)
+
+image_val='image1'
+n=0
+while n==0:
+    image = db.child("defects").child(image_val).get()
+    if(image!=None):
+        number=db.child("defects").child(image_val).child("total").get().val()
+        for i in range(int(number)):
+            x="x"
+            y="y"
+            value=[]
+            x_val=db.child("defects").child(image_val).child(x+str(i+1)).get().val()
+            y_val=db.child("defects").child(image_val).child(y+str(i+1)).get().val()
+            value.append(x_val)
+            value.append(y_val)
+            val=str(value[0])+","+str(value[1])+"\\";
+            ser.write(val)
+        break;
+print(value)
+
+
+
